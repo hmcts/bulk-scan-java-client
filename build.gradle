@@ -21,7 +21,7 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'org.springframework.cloud:spring-cloud-starter-openfeign:2.0.1.RELEASE'
     compile 'org.springframework.cloud:spring-cloud-starter-oauth2:2.0.0.RELEASE'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.6'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.1'
     compile 'org.openapitools:jackson-databind-nullable:0.1.0'
     compile 'org.hibernate.validator:hibernate-validator:6.0.16.Final'
     testCompile 'org.springframework.boot:spring-boot-starter-test:2.0.5.RELEASE'
