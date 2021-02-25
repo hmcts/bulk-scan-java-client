@@ -19,7 +19,7 @@ repositories {
 dependencies {
     compile 'io.swagger:swagger-annotations:1.5.18'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'org.springframework.cloud:spring-cloud-starter-openfeign:2.0.1.RELEASE'
+    compile 'org.springframework.cloud:spring-cloud-starter-openfeign:3.0.1'
     compile 'org.springframework.cloud:spring-cloud-starter-oauth2:2.0.0.RELEASE'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.6'
     compile 'org.openapitools:jackson-databind-nullable:0.1.0'
