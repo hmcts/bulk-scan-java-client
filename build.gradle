@@ -24,7 +24,7 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.6'
     compile 'org.openapitools:jackson-databind-nullable:0.1.0'
     compile 'org.hibernate.validator:hibernate-validator:6.0.16.Final'
-    testCompile 'org.springframework.boot:spring-boot-starter-test:2.0.5.RELEASE'
+    testCompile 'org.springframework.boot:spring-boot-starter-test:2.4.6'
 }
 
 group = 'uk.gov.hmcts.reform'
