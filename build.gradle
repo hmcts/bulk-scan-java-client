@@ -37,6 +37,7 @@ bootJar {
 
 jar {
     enabled = true
+    classifier = ''
 }
 
 java {
