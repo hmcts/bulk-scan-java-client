@@ -29,7 +29,7 @@ plugins {
 apply plugin: 'com.github.ben-manes.versions'
 
 group = 'uk.gov.hmcts'
-version = '0.0.1'
+version = System.getenv('RELEASE_VERSION')?.replace('refs/tags/', '') ?: 'DEV-SNAPSHOT'
 
 bootJar {
     enabled = false
@@ -43,6 +43,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    withSourcesJar()
 }
 
 tasks.withType(JavaCompile) {
@@ -146,6 +147,14 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 def versions = [
     jackson                 : '2.13.1',
     junit                   : '5.8.2',
@@ -203,3 +212,5 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 }
+
+rootProject.tasks.publish.dependsOn(project.tasks.publishToMavenLocal)
