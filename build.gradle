@@ -35,9 +35,12 @@ bootJar {
     enabled = false
 }
 
+tasks.named("jar") {
+    archiveClassifier = ''
+}
+
 jar {
     enabled = true
-    classifier = ''
 }
 
 java {
