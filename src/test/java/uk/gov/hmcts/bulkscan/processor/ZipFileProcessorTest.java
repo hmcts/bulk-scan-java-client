@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.bulkscan.helper.DirectoryZipper;
+import uk.gov.hmcts.bulkscan.type.IPdfProcessor;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Consumer;
 import java.util.zip.ZipInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,9 +30,9 @@ class ZipFileProcessorTest {
         ZipInputStream extractedZis = new ZipInputStream(new ByteArrayInputStream(zipFile));
 
         var zipFileName = "1_2324_43543.zip";
-        var consumer = mock(Consumer.class);
-        zipFileProcessor.extractPdfFiles(extractedZis, zipFileName, consumer);
-        verify(consumer).accept(any());
+        var pdfProcessor = mock(IPdfProcessor.class);
+        zipFileProcessor.extractPdfFiles(extractedZis, zipFileName, pdfProcessor);
+        verify(pdfProcessor).processPdfList(any());
         assertThat(new File(FOLDER_NAME + File.separator + zipFileName)).doesNotExist();
     }
 }
