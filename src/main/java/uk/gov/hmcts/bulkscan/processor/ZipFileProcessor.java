@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.bulkscan.enums.EnvelopeProcessStatus;
 import uk.gov.hmcts.bulkscan.exception.FileSizeExceedMaxUploadLimit;
 import uk.gov.hmcts.bulkscan.exception.NonPdfFileFoundException;
+import uk.gov.hmcts.bulkscan.type.IPdfProcessor;
 import uk.gov.hmcts.bulkscan.type.ZipFileContentDetail;
 
 import java.io.File;
@@ -16,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -33,19 +34,21 @@ public class ZipFileProcessor {
         this.downloadPath = downloadPath + File.separator;
     }
 
-    public void extractPdfFiles(
+    public EnvelopeProcessStatus extractPdfFiles(
         ZipInputStream extractedZis,
         String zipFileName,
-        Consumer<List<File>> pdfListConsumer
+        IPdfProcessor pdfProcessor
     ) throws IOException {
+        var result = EnvelopeProcessStatus.ERRORS;
         try {
             List<File> fileList = createPdfAndSaveToTemp(extractedZis, zipFileName);
             checkFileSizeAgainstUploadLimit(fileList);
-            pdfListConsumer.accept(fileList);
-            log.info("Function consumed, zipFileName {}", zipFileName);
+            result = pdfProcessor.processPdfList(fileList);
+            log.info("IPdfProcessor consumed, zipFileName {}", zipFileName);
         } finally {
             deleteFolder(zipFileName);
         }
+        return result;
     }
 
     public void checkFileSizeAgainstUploadLimit(List<File> fileList) {
