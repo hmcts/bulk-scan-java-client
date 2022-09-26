@@ -1,16 +1,13 @@
 package uk.gov.hmcts.bulkscan.processor;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.bulkscan.enums.EnvelopeProcessStatus;
 import uk.gov.hmcts.bulkscan.exception.FileSizeExceedMaxUploadLimit;
 import uk.gov.hmcts.bulkscan.exception.NonPdfFileFoundException;
-import uk.gov.hmcts.bulkscan.type.IPdfProcessor;
 import uk.gov.hmcts.bulkscan.type.ZipFileContentDetail;
 
 import java.io.File;
@@ -18,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,26 +32,18 @@ public class ZipFileProcessor {
         this.downloadPath = downloadPath + File.separator;
     }
 
-    public EnvelopeProcessStatus extractPdfFiles(
+    public Map<String, File> extractPdfFiles(
         ZipInputStream extractedZis,
-        String zipFileName,
-        IPdfProcessor pdfProcessor
+        String zipFileName
     ) throws IOException {
-        var result = EnvelopeProcessStatus.ERRORS;
-        try {
-            List<File> fileList = createPdfAndSaveToTemp(extractedZis, zipFileName);
-            checkFileSizeAgainstUploadLimit(fileList);
-            result = pdfProcessor.processPdfList(fileList);
-            log.info("IPdfProcessor consumed, zipFileName {}", zipFileName);
-        } finally {
-            deleteFolder(zipFileName);
-        }
-        return result;
+        Map<String, File> fileList = createPdfAndSaveToTemp(extractedZis, zipFileName);
+        checkFileSizeAgainstUploadLimit(fileList);
+        return fileList;
     }
 
-    public void checkFileSizeAgainstUploadLimit(List<File> fileList) {
+    public void checkFileSizeAgainstUploadLimit(Map<String, File> fileList) {
         long totalSize = 0;
-        for (File file : fileList) {
+        for (File file : fileList.values()) {
             long fileSize = file.length();
             if (fileSize > MAX_PDF_SIZE) {
                 log.info("PDF size exceeds the max upload size limit, {} {} ", file.getName(), fileSize);
@@ -65,7 +55,7 @@ public class ZipFileProcessor {
         log.info("Total upload size {}", totalSize);
     }
 
-    private void deleteFolder(String zipFileName) {
+    public void deleteZipExtracted(String zipFileName) {
         String folderPath =  downloadPath +  zipFileName;
         try {
             FileUtils.deleteDirectory(new File(folderPath));
@@ -109,13 +99,13 @@ public class ZipFileProcessor {
         return new ZipFileContentDetail(metadata, pdfs);
     }
 
-    private List<File> createPdfAndSaveToTemp(
+    private Map<String, File> createPdfAndSaveToTemp(
         ZipInputStream extractedZis,
         String zipFileName
     ) throws IOException {
 
         ZipEntry zipEntry;
-        List<File> pdfs = new ArrayList<>();
+        Map<String, File> pdfs = new java.util.HashMap<String, File>();
         String folderPath =  downloadPath + zipFileName;
 
         while ((zipEntry = extractedZis.getNextEntry()) != null) {
@@ -124,7 +114,7 @@ public class ZipFileProcessor {
                     folderPath + File.separator + FilenameUtils.getName(zipEntry.getName());
                 var pdfFile = new File(filePath);
                 FileUtils.copyToFile(extractedZis, pdfFile);
-                pdfs.add(pdfFile);
+                pdfs.put(zipEntry.getName(), pdfFile);
                 log.info(
                     "ZipFile:{}, has {}, pdf size: {}",
                     zipFileName,
@@ -135,6 +125,6 @@ public class ZipFileProcessor {
         }
         log.info("Zip file {} has {} pdfs: {}. Saved to {} ", zipFileName, pdfs.size(), pdfs, folderPath);
 
-        return ImmutableList.copyOf(pdfs);
+        return pdfs;
     }
 }

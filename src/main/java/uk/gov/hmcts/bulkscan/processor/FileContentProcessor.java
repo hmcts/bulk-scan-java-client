@@ -63,7 +63,7 @@ public class FileContentProcessor {
             ocrValidator
         );
 
-        return new ProcessedEnvelopeContents(envelope, zipDetail, inputEnvelope, warnings);
+        return new ProcessedEnvelopeContents(envelope, zipDetail, inputEnvelope, warnings, zipFileProcessor);
     }
 }
 
