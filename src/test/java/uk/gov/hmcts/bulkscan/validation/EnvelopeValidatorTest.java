@@ -3,8 +3,10 @@ package uk.gov.hmcts.bulkscan.validation;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.bulkscan.exception.DisallowedDocumentTypesException;
 import uk.gov.hmcts.bulkscan.exception.DuplicateDocumentControlNumbersInEnvelopeException;
 import uk.gov.hmcts.bulkscan.exception.FileNameIrregularitiesException;
@@ -27,6 +29,7 @@ import static uk.gov.hmcts.bulkscan.helper.InputEnvelopeCreator.scannableItem;
 import static uk.gov.hmcts.bulkscan.type.Classification.SUPPLEMENTARY_EVIDENCE;
 
 @SuppressWarnings("checkstyle:LineLength")
+@ExtendWith(MockitoExtension.class)
 class EnvelopeValidatorTest {
 
     private static final String VALIDATION_URL = "https://example.com/validate-ocr";

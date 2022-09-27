@@ -24,13 +24,6 @@ public class BulkScanOcrValidator {
 
     private static final Logger log = LoggerFactory.getLogger(BulkScanOcrValidator.class);
 
-    private final OcrPresenceValidator presenceValidator;
-
-    public BulkScanOcrValidator(
-        OcrPresenceValidator presenceValidator
-    ) {
-        this.presenceValidator = presenceValidator;
-    }
 
     /**
      * If required, validates the OCR data of the given envelope.
@@ -47,7 +40,7 @@ public class BulkScanOcrValidator {
             return Optional.empty();
         }
 
-        return findDocWithOcr(envelope)
+        return envelope.findDocWithOcr()
             .map(docWithOcr -> {
                 var res = validator.validateEnvelope(getFormType(docWithOcr), toFormData(docWithOcr));
                 if (res.status().equals(OcrValidationStatus.ERRORS)) {
@@ -93,10 +86,6 @@ public class BulkScanOcrValidator {
                 log.error(errorMessage);
                 throw new OcrValidationException(errorMessage);
             });
-    }
-
-    private Optional<InputScannableItem> findDocWithOcr(InputEnvelope envelope) {
-        return presenceValidator.assertHasProperlySetOcr(envelope.scannableItems);
     }
 
     private FormData toFormData(InputScannableItem doc) {

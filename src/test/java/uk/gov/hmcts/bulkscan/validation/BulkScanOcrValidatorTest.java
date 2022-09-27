@@ -48,15 +48,13 @@ class BulkScanOcrValidatorTest {
     private static final String PO_BOX_1 = "sample PO box 1";
     private static final String PO_BOX_2 = "sample PO box 2";
 
-    @Mock private OcrPresenceValidator presenceValidator;
-
     @Mock private IServiceOcrValidator serviceOcrValidator;
 
     private BulkScanOcrValidator ocrValidator;
 
     @BeforeEach
     void setUp() {
-        this.ocrValidator = new BulkScanOcrValidator(presenceValidator);
+        this.ocrValidator = new BulkScanOcrValidator();
         this.serviceOcrValidator = Mockito.mock(IServiceOcrValidator.class);
     }
 
@@ -75,8 +73,6 @@ class BulkScanOcrValidatorTest {
                         SUPPLEMENTARY_EVIDENCE_WITH_OCR,
                         docs
                 );
-        given(presenceValidator.assertHasProperlySetOcr(docs))
-                .willThrow(new OcrPresenceException("msg"));
 
         // when
         Throwable exc = catchThrowable(() ->
@@ -85,7 +81,7 @@ class BulkScanOcrValidatorTest {
         // then
         assertThat(exc)
                 .isInstanceOf(OcrPresenceException.class)
-                .hasMessage("msg");
+                .hasMessage("OCR on document of invalid type");
     }
 
     @Test
@@ -106,9 +102,6 @@ class BulkScanOcrValidatorTest {
         given(this.serviceOcrValidator.validateEnvelope(any(), any()))
                 .willReturn(new OcrValidationResult(OcrValidationStatus.SUCCESS, emptyList(), emptyList()));
 
-        given(presenceValidator.assertHasProperlySetOcr(envelope.scannableItems))
-                .willReturn(Optional.of(docWithOcr));
-
         ocrValidator.assertOcrDataIsValid(envelope, this.serviceOcrValidator);
     }
 
@@ -126,9 +119,6 @@ class BulkScanOcrValidatorTest {
 
         given(this.serviceOcrValidator.validateEnvelope(any(), any()))
                 .willReturn(new OcrValidationResult(OcrValidationStatus.WARNINGS, expectedWarnings, emptyList()));
-
-        given(presenceValidator.assertHasProperlySetOcr(envelope.scannableItems))
-                .willReturn(Optional.of(scannableItem));
 
         // when
         Optional<OcrValidationWarnings> warnings = ocrValidator.assertOcrDataIsValid(envelope, this.serviceOcrValidator);
@@ -169,9 +159,6 @@ class BulkScanOcrValidatorTest {
                 ),
                 SUPPLEMENTARY_EVIDENCE
         );
-
-        given(presenceValidator.assertHasProperlySetOcr(any()))
-                .willReturn(Optional.of(doc(FORM, "y", sampleOcr())));
 
         given(this.serviceOcrValidator.validateEnvelope(any(), any()))
                 .willReturn(new OcrValidationResult(OcrValidationStatus.ERRORS, emptyList(), singletonList("Error!")));

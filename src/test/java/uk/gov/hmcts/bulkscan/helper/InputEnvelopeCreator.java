@@ -63,8 +63,7 @@ public final class InputEnvelopeCreator {
                 classification,
                 scannableItems,
                 payments,
-                emptyList()
-        );
+                emptyList());
     }
 
     public static InputScannableItem scannableItem(String fileName) {

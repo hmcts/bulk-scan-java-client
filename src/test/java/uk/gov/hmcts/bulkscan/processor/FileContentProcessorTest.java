@@ -92,8 +92,7 @@ class FileContentProcessorTest {
                 NEW_APPLICATION,
                 emptyList(),
                 emptyList(),
-                emptyList()
-        );
+                emptyList());
     }
 
     @Test
