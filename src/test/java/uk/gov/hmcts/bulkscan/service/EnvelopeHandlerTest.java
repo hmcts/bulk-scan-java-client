@@ -75,8 +75,7 @@ class EnvelopeHandlerTest {
                 NEW_APPLICATION,
                 emptyList(),
                 emptyList(),
-                emptyList()
-        );
+                emptyList());
     }
 
     @Test
